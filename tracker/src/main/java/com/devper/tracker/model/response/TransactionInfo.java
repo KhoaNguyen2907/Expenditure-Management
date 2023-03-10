@@ -8,13 +8,17 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TransactionResponse {
-    private List<TransactionInfo> transactionList;
-    private BigDecimal currentBalance;
+public class TransactionInfo {
+    private UUID id;
+    private String userId;
+    private String category;
+    private TransactionType type;
+    private String description;
+    private BigDecimal amount;
+    private LocalDateTime date;
 }

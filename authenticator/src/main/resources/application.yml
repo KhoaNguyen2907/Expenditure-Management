@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: tracker
+    name: authenticator
   datasource:
     url: jdbc:postgresql://${RDS_HOSTNAME:localhost}:${RDS_PORT:5433}/${RDS_DB_NAME:authenticator}
     username: ${RDS_USERNAME:ndkhoalk97}
@@ -22,3 +22,10 @@ spring:
 jwt:
   algorithm:
     secret: 123456 # Secret key used to sign the JWT token
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true

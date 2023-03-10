@@ -42,8 +42,7 @@ public class AuthWebSecurityConfig extends BaseWebSecurityConfig {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers("/swagger-ui/**").permitAll()
-                .anyRequest().permitAll();
+                .antMatchers("/swagger-ui/**").permitAll();
         http.authenticationProvider(authenticationProvider());
         return super.filterChain(http);
     }

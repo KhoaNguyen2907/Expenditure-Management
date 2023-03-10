@@ -1,6 +1,8 @@
 server:
   port: 8082
 spring:
+  application:
+    name: reporter
   data:
     mongodb:
       authentication-database: admin
@@ -13,3 +15,10 @@ spring:
 jwt:
   algorithm:
     secret: 123456 # Secret key used to sign the JWT token
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true

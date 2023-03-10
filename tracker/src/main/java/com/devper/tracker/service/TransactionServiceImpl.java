@@ -7,11 +7,14 @@ import com.devper.tracker.model.Transaction;
 import com.devper.tracker.model.TransactionType;
 import com.devper.tracker.model.request.CreateTransactionRequest;
 import com.devper.tracker.model.request.UpdateTransactionRequest;
+import com.devper.tracker.model.response.TransactionInfo;
 import com.devper.tracker.model.response.TransactionResponse;
+import com.sun.xml.bind.v2.TODO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -23,24 +26,32 @@ public class TransactionServiceImpl implements TransactionService {
 
     private TransactionDAO transactionDAO;
     private ProjectMapper mapper;
+    private ReportService reportService;
 
-    public TransactionServiceImpl(TransactionDAO transactionDAO, ProjectMapper mapper) {
+    public TransactionServiceImpl(TransactionDAO transactionDAO, ProjectMapper mapper, ReportService reportService) {
         this.transactionDAO = transactionDAO;
         this.mapper = mapper;
+        this.reportService = reportService;
     }
 
     @Override
-    public List<TransactionResponse> getAll() {
+    public TransactionResponse getAll() {
         List<Transaction> transactionList = transactionDAO.findAll();
         log.info("transactionList: {}", transactionList);
-        return transactionList.stream().map(transaction -> mapper.map(transaction, TransactionResponse.class)).collect(Collectors.toList());
+        List<TransactionInfo> transactionInfos = transactionList.stream().map(transaction -> mapper.map(transaction, TransactionInfo.class))
+                .collect(Collectors.toList());
+        BigDecimal currentBalance = reportService.getCurrentBalance();
+        return TransactionResponse.builder()
+                .transactionList(transactionInfos)
+                .currentBalance(currentBalance)
+                .build();
     }
 
     @Override
-    public TransactionResponse get(UUID id) {
+    public TransactionInfo get(UUID id) {
         Transaction transaction = transactionDAO.findById(id).orElseThrow(() -> new NotFoundException("Transaction not found"));
         log.info("transaction: {}", transaction);
-        return mapper.map(transaction, TransactionResponse.class);
+        return mapper.map(transaction, TransactionInfo.class);
     }
 
     @Override
@@ -48,10 +59,11 @@ public class TransactionServiceImpl implements TransactionService {
         transactionDAO.findById(id).orElseThrow(() -> new NotFoundException("Transaction not found"));
         transactionDAO.deleteById(id);
         log.info("delete transaction: {}", id);
+        // TODO: send message to report service
     }
 
     @Override
-    public TransactionResponse create(CreateTransactionRequest request) {
+    public TransactionInfo create(CreateTransactionRequest request) {
         Transaction transaction = mapper.map(request, Transaction.class);
         if (request.getType().toLowerCase().equals("expense")) {
             transaction.setType(TransactionType.EXPENSE);
@@ -60,11 +72,14 @@ public class TransactionServiceImpl implements TransactionService {
         }
         transaction = transactionDAO.save(transaction);
         log.info("create transaction: {}", transaction);
-        return mapper.map(transaction, TransactionResponse.class);
+
+        // TODO: send message to report service
+
+        return mapper.map(transaction, TransactionInfo.class);
     }
 
     @Override
-    public TransactionResponse update(UUID id, UpdateTransactionRequest request) {
+    public TransactionInfo update(UUID id, UpdateTransactionRequest request) {
         Transaction transaction = transactionDAO.findById(id).orElseThrow(() -> new NotFoundException("Transaction not found"));
         mapper.map(request, transaction);
         if (request.getType().toLowerCase().equals("expense")) {
@@ -74,6 +89,9 @@ public class TransactionServiceImpl implements TransactionService {
         }
         transaction = transactionDAO.save(transaction);
         log.info("update transaction: {}", transaction);
-        return mapper.map(transaction, TransactionResponse.class);
+
+        // TODO: send message to report service
+
+        return mapper.map(transaction, TransactionInfo.class);
     }
 }

@@ -37,7 +37,6 @@ public class Transaction {
     private String description;
     private BigDecimal amount;
 
-    @JsonSerialize(as = LocalDateTime.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @CreatedDate

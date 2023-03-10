@@ -34,6 +34,12 @@ public class ReportServiceImpl implements ReportService {
         return response;
     }
 
+    @Override
+    public BigDecimal getCurrentBalance() {
+        //TODO: Need to update this method
+        return BigDecimal.valueOf(22222);
+    }
+
     public DayReport getDayReportByOwnerId(LocalDate date, UUID ownerId) {
         DayReport dayReportProbe = new DayReport();
         dayReportProbe.setDate(date);

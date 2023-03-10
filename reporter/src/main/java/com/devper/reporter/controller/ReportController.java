@@ -26,6 +26,10 @@ public class ReportController {
     public ResponseEntity<ResponseWrapper> getDayReport(@PathVariable Integer day, @PathVariable Integer month, @PathVariable Integer year) {
          DayReportResponse report = reportService.getDayReport(day, month, year);
         return ResponseUtils.success(report, HttpStatus.OK);
-         
+    }
+
+    @GetMapping(path = "/current-balance")
+    public ResponseEntity<ResponseWrapper> getCurrentBalance() {
+        return ResponseUtils.success(reportService.getCurrentBalance(), HttpStatus.OK);
     }
 }

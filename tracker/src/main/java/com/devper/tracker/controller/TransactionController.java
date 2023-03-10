@@ -4,6 +4,7 @@ import com.devper.common.model.response.ResponseWrapper;
 import com.devper.common.utils.ResponseUtils;
 import com.devper.tracker.model.request.CreateTransactionRequest;
 import com.devper.tracker.model.request.UpdateTransactionRequest;
+import com.devper.tracker.model.response.TransactionInfo;
 import com.devper.tracker.model.response.TransactionResponse;
 import com.devper.tracker.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,14 +28,14 @@ public class TransactionController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseWrapper> get(@PathVariable UUID id) {
         log.info("get transaction id: {}", id);
-        TransactionResponse transaction = transactionService.get(id);
+        TransactionInfo transaction = transactionService.get(id);
         return ResponseUtils.success(transaction, HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<ResponseWrapper> getAll() {
         log.info("get all transactions");
-        List<TransactionResponse> transactions = transactionService.getAll();
+        TransactionResponse transactions = transactionService.getAll();
         return ResponseUtils.success(transactions, HttpStatus.OK);
     }
 
@@ -48,14 +49,14 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<ResponseWrapper> create(@RequestBody CreateTransactionRequest request) {
         log.info("create transaction request: {}", request.toString());
-        TransactionResponse transaction = transactionService.create(request);
+        TransactionInfo transaction = transactionService.create(request);
         return ResponseUtils.success(transaction, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseWrapper> update(@PathVariable UUID id, @RequestBody UpdateTransactionRequest request) {
         log.info("update transaction id: {} with new info: {}", id, request.toString());
-        TransactionResponse transaction = transactionService.update(id, request);
+        TransactionInfo transaction = transactionService.update(id, request);
         return ResponseUtils.success(transaction, HttpStatus.OK);
     }
 
