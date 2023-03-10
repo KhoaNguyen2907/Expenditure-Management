@@ -1,0 +1,84 @@
+services:
+  postgres-tracker:
+    container_name: postgres-tracker
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ndkhoalk97
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: transaction_tracker
+    volumes:
+      - postgres-tracker:/var/lib/postgresql/data
+    networks:
+      - postgres-tracker
+    restart: unless-stopped
+
+  postgres-authenticator:
+    container_name: postgres-authenticator
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ndkhoalk97
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: authenticator
+    volumes:
+      - postgres-auth:/var/lib/postgresql/data
+    networks:
+      - postgres-authenticator
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    networks:
+      - postgres-tracker
+      - postgres-authenticator
+    restart: unless-stopped
+
+  mongodb-reporter:
+    image: mongo
+    container_name: mongodb-reporter
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data
+    networks:
+      - mongodb_network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootuser
+      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    networks:
+        - mongodb_network
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
+      - ME_CONFIG_MONGODB_SERVER=mongodb-reporter
+
+networks:
+  postgres-tracker:
+    driver: bridge
+  postgres-authenticator:
+    driver: bridge
+  mongodb_network:
+    driver: bridge
+volumes:
+  postgres-auth:
+  postgres-tracker:
+  pgadmin:
+  mongo-data:

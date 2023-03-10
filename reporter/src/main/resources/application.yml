@@ -1,0 +1,15 @@
+server:
+  port: 8082
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      username: rootuser
+      password: rootpass
+      port: 27017
+      database: reporter
+      host: localhost
+
+jwt:
+  algorithm:
+    secret: 123456 # Secret key used to sign the JWT token
