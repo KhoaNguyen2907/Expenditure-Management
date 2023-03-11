@@ -18,7 +18,7 @@ import java.util.UUID;
 public class MonthReport {
     @Id
     private String id;
-    private UUID ownerId;
+    private String username;
     private int month;
     private ReportStat stats;
     private LocalDateTime lastedUpdate;

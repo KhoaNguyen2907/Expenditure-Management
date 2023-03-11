@@ -32,7 +32,7 @@ public class TransactionController {
         return ResponseUtils.success(transaction, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<ResponseWrapper> getAll() {
         log.info("get all transactions");
         TransactionResponse transactions = transactionService.getAll();
@@ -46,7 +46,7 @@ public class TransactionController {
         return ResponseUtils.success(null, HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping
+    @PostMapping("")
     public ResponseEntity<ResponseWrapper> create(@RequestBody CreateTransactionRequest request) {
         log.info("create transaction request: {}", request.toString());
         TransactionInfo transaction = transactionService.create(request);

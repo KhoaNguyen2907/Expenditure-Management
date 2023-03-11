@@ -21,7 +21,7 @@ import java.util.UUID;
 public class DayReport {
     @Id
     private String id;
-    private UUID ownerId;
+    private String username;
     private LocalDate date;
     private ReportStat stats;
     private LocalDateTime lastedUpdate;

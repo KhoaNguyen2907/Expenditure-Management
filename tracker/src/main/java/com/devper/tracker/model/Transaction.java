@@ -30,7 +30,7 @@ public class Transaction {
     @Type(type = "uuid-char")
     private UUID id;
     @Column(name = "user_id")
-    private String userId;
+    private String username;
     private String category;
     @Enumerated(EnumType.STRING)
     private TransactionType type;

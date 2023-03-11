@@ -70,6 +70,13 @@ services:
       - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
       - ME_CONFIG_MONGODB_SERVER=mongodb-reporter
 
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+
+    ports:
+      - 9411:9411
+
 networks:
   postgres-tracker:
     driver: bridge

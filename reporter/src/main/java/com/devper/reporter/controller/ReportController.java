@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+
 @Slf4j
 @RestController
 @RequestMapping(path = ReportController.PATH)
@@ -24,7 +26,7 @@ public class ReportController {
 
     @GetMapping(path = "/{day}/{month}/{year}")
     public ResponseEntity<ResponseWrapper> getDayReport(@PathVariable Integer day, @PathVariable Integer month, @PathVariable Integer year) {
-         DayReportResponse report = reportService.getDayReport(day, month, year);
+         DayReportResponse report = reportService.getDayReport(LocalDate.of(year, month, day));
         return ResponseUtils.success(report, HttpStatus.OK);
     }
 
