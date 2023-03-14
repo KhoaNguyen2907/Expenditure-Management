@@ -4,9 +4,7 @@ import com.devper.tracker.model.request.CreateTransactionRequest;
 import com.devper.tracker.model.request.UpdateTransactionRequest;
 import com.devper.tracker.model.response.TransactionInfo;
 import com.devper.tracker.model.response.TransactionResponse;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 

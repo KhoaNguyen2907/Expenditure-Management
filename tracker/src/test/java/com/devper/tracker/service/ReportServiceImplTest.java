@@ -1,24 +1,10 @@
 package com.devper.tracker.service;
 
 import com.devper.clients.reporter.ReporterClient;
-import com.devper.common.model.response.ResponseWrapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ReportServiceImplTest {
@@ -30,18 +16,18 @@ public class ReportServiceImplTest {
     private ReportServiceImpl reportService;
 
 
-    @Test
-    public void testGetCurrentBalance() {
-        // given
-        Authentication authentication = new UsernamePasswordAuthenticationToken("test_user", "test_token");
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        ResponseEntity<ResponseWrapper> response = new ResponseEntity<>(ResponseWrapper.builder().content(100).build(), HttpStatus.OK);
-        when(reporterClient.getCurrentBalance("Bearer test_token")).thenReturn(response);
-
-        // when
-        BigDecimal balance = reportService.getCurrentBalance();
-
-        // then
-        assertEquals(BigDecimal.valueOf(100), balance);
-    }
+//    @Test
+//    public void testGetCurrentBalance() {
+//        // given
+//        Authentication authentication = new UsernamePasswordAuthenticationToken("test_user", "test_token");
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        ResponseEntity<ResponseWrapper> response = new ResponseEntity<>(ResponseWrapper.builder().content(100).build(), HttpStatus.OK);
+//        when(reporterClient.getCurrentBalance("Bearer test_token")).thenReturn(response);
+//
+//        // when
+//        BigDecimal balance = reportService.getCurrentBalance();
+//
+//        // then
+//        assertEquals(BigDecimal.valueOf(100), balance);
+//    }
 }

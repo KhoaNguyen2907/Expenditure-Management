@@ -1,7 +1,9 @@
 package com.devper.tracker.service;
 
+import com.devper.amqp.RabbitMessageProducer;
 import com.devper.common.exception.NotFoundException;
 import com.devper.common.utils.ProjectMapper;
+import com.devper.tracker.config.TrackerAMQPConfig;
 import com.devper.tracker.dao.TransactionDAO;
 import com.devper.tracker.model.Transaction;
 import com.devper.tracker.model.TransactionType;
@@ -9,8 +11,8 @@ import com.devper.tracker.model.request.CreateTransactionRequest;
 import com.devper.tracker.model.request.UpdateTransactionRequest;
 import com.devper.tracker.model.response.TransactionInfo;
 import com.devper.tracker.model.response.TransactionResponse;
-import com.sun.xml.bind.v2.TODO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +29,15 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionDAO transactionDAO;
     private ProjectMapper mapper;
     private ReportService reportService;
+    private RabbitMessageProducer producer;
+    @Autowired
+    private TrackerAMQPConfig trackerAMQPConfig;
 
-    public TransactionServiceImpl(TransactionDAO transactionDAO, ProjectMapper mapper, ReportService reportService) {
+    public TransactionServiceImpl(TransactionDAO transactionDAO, ProjectMapper mapper, ReportService reportService, RabbitMessageProducer producer) {
         this.transactionDAO = transactionDAO;
         this.mapper = mapper;
         this.reportService = reportService;
+        this.producer = producer;
     }
 
     @Override
@@ -72,10 +78,10 @@ public class TransactionServiceImpl implements TransactionService {
         }
         transaction = transactionDAO.save(transaction);
         log.info("create transaction: {}", transaction);
+        TransactionInfo transactionInfo = mapper.map(transaction, TransactionInfo.class);
+        producer.send(trackerAMQPConfig.getInternalExchange(), trackerAMQPConfig.getReporterRoutingKey(), transactionInfo);
 
-        // TODO: send message to report service
-
-        return mapper.map(transaction, TransactionInfo.class);
+        return transactionInfo;
     }
 
     @Override

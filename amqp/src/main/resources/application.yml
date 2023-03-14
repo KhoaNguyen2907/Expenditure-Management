@@ -1,0 +1,11 @@
+spring:
+  rabbitmq:
+    addresses: localhost:5672
+
+rabbitmq:
+  exchange:
+    internal: internal.exchange
+  routing-key:
+    reporter: internal.reporter.routing.key
+  queue:
+    reporter: internal.reporter.queue

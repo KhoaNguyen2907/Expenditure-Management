@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -22,9 +19,9 @@ public class DayReport {
     @Id
     private String id;
     private String username;
-    private LocalDate date;
+    private String date;
     private ReportStat stats;
-    private LocalDateTime lastedUpdate;
+    private String lastedUpdate;
     private List<ReportTransaction> incomes;
     private List<ReportTransaction> expenses;
 }

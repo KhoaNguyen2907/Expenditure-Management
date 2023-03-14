@@ -1,6 +1,7 @@
 package com.devper.reporter.service;
 
 import com.devper.common.exception.NotFoundException;
+import com.devper.common.utils.DateTimeUtil;
 import com.devper.common.utils.ProjectMapper;
 import com.devper.reporter.dao.BalanceReportDAO;
 import com.devper.reporter.dao.ReportDAO;
@@ -11,15 +12,16 @@ import org.springframework.data.domain.Example;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
+@Transactional
 public class ReportServiceImpl implements ReportService {
     private ReportDAO reportDAO;
     private ProjectMapper mapper;
@@ -55,7 +57,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public void processNewTransaction(TransactionRequest transaction) {
         String username = getLoggedUsername();
-        DayReport report = getDayReportByUsername(transaction.getDate().toLocalDate(), username);
+        DayReport report = getDayReportByUsername(LocalDate.parse(transaction.getDate(),DateTimeUtil.getDateTimeFormatter()), username);
         if (transaction.getType() == TransactionType.INCOME) {
             report.getStats().setTotalIncomes(report.getStats().getTotalIncomes().add(transaction.getAmount()));
             report.getIncomes().add(mapper.map(transaction, ReportTransaction.class));
@@ -82,7 +84,7 @@ public class ReportServiceImpl implements ReportService {
             }
         }
         report.getStats().setTotal(report.getStats().getTotalIncomes().subtract(report.getStats().getTotalExpenses()));
-        report.setLastedUpdate(LocalDateTime.now());
+        report.setLastedUpdate(DateTimeUtil.nowDateTime());
 
         reportDAO.save(report);
     }
@@ -90,7 +92,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public void processUpdateTransaction(TransactionRequest transaction) {
         String username = getLoggedUsername();
-        DayReport report = getDayReportByUsername(transaction.getDate().toLocalDate(), username);
+        DayReport report = getDayReportByUsername(LocalDate.parse(transaction.getDate()), username);
         if (transaction.getType() == TransactionType.INCOME) {
             ReportTransaction oldTransaction = report.getIncomes().stream().filter(t -> t.getTransactionId().equals(transaction.getId())).findFirst().orElse(null);
             if (oldTransaction == null) throw new NotFoundException("Transaction not found");
@@ -105,7 +107,7 @@ public class ReportServiceImpl implements ReportService {
             report.getExpenses().add(mapper.map(transaction, ReportTransaction.class));
         }
         report.getStats().setTotal(report.getStats().getTotalIncomes().subtract(report.getStats().getTotalExpenses()));
-        report.setLastedUpdate(LocalDateTime.now());
+        report.setLastedUpdate(LocalDateTime.now().toString());
 
         reportDAO.save(report);
 
@@ -114,7 +116,7 @@ public class ReportServiceImpl implements ReportService {
 
     public DayReport getDayReportByUsername(LocalDate date, String username) {
         DayReport dayReportProbe = new DayReport();
-        dayReportProbe.setDate(date);
+        dayReportProbe.setDate(date.toString());
         dayReportProbe.setUsername(username);
         dayReportProbe.setStats(new ReportStat());
 
@@ -126,9 +128,9 @@ public class ReportServiceImpl implements ReportService {
             dayReportProbe.getStats().setTotal(BigDecimal.valueOf(0));
             dayReportProbe.getStats().setTotalIncomes(BigDecimal.valueOf(0));
             dayReportProbe.getStats().setTotalExpenses(BigDecimal.valueOf(0));
-            dayReportProbe.setLastedUpdate(LocalDateTime.now());
             dayReportProbe.setIncomes(new LinkedList<>());
             dayReportProbe.setExpenses(new LinkedList<>());
+            dayReportProbe.setLastedUpdate(LocalDateTime.now().toString());
             return dayReportProbe;
         }
     }

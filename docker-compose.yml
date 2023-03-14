@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres-tracker:/var/lib/postgresql/data
     networks:
-      - postgres-tracker
+      - postgres-tracker-network
     restart: unless-stopped
 
   postgres-authenticator:
@@ -26,7 +26,7 @@ services:
     volumes:
       - postgres-auth:/var/lib/postgresql/data
     networks:
-      - postgres-authenticator
+      - postgres-authenticator-network
     restart: unless-stopped
 
   pgadmin:
@@ -41,8 +41,8 @@ services:
     volumes:
       - pgadmin:/var/lib/pgadmin
     networks:
-      - postgres-tracker
-      - postgres-authenticator
+      - postgres-tracker-network
+      - postgres-authenticator-network
     restart: unless-stopped
 
   mongodb-reporter:
@@ -54,6 +54,7 @@ services:
       - mongo-data:/data
     networks:
       - mongodb_network
+      - em-network
     environment:
       - MONGO_INITDB_ROOT_USERNAME=rootuser
       - MONGO_INITDB_ROOT_PASSWORD=rootpass
@@ -62,7 +63,7 @@ services:
     container_name: mongo-express
     restart: always
     ports:
-      - 8081:8081
+      - 8088:8081
     networks:
         - mongodb_network
     environment:
@@ -73,17 +74,113 @@ services:
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
-
     ports:
       - 9411:9411
+    networks:
+      - em-network
+
+  rabbitmq:
+    image: rabbitmq:3.9.11-management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: ndkhoalk97
+      RABBITMQ_DEFAULT_PASS: 123456
+      RABBITMQ_DEFAULT_VHOST: /
+    networks:
+      - em-network
+
+  eureka-server:
+    image: ndkhoalk97/eureka-server
+    container_name: eureka-server
+    ports:
+      - 8761:8761
+    restart: unless-stopped
+    depends_on:
+      - zipkin
+    networks:
+      - em-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  api-gateway:
+    image: ndkhoalk97/api-gateway
+    container_name: api-gateway
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+    depends_on:
+      - eureka-server
+      - zipkin
+    networks:
+      - em-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  authenticator:
+    image: ndkhoalk97/authenticator
+    container_name: authenticator
+    ports:
+      - 8082:8082
+    restart: unless-stopped
+    depends_on:
+      - eureka-server
+      - zipkin
+      - postgres-authenticator
+    networks:
+      - em-network
+      - postgres-authenticator-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+
+  tracker:
+    image: ndkhoalk97/tracker
+    container_name: tracker
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    depends_on:
+      - eureka-server
+      - zipkin
+      - rabbitmq
+      - postgres-tracker
+    networks:
+      - em-network
+      - postgres-tracker-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  reporter:
+    image: ndkhoalk97/reporter
+    container_name: reporter
+    ports:
+      - 8081:8081
+    restart: unless-stopped
+    depends_on:
+      - eureka-server
+      - zipkin
+      - rabbitmq
+      - mongodb-reporter
+      - tracker
+    networks:
+      - em-network
+      - mongodb_network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
 
 networks:
-  postgres-tracker:
+  postgres-tracker-network:
     driver: bridge
-  postgres-authenticator:
+  postgres-authenticator-network:
     driver: bridge
   mongodb_network:
     driver: bridge
+  em-network:
+    driver: bridge
+
 volumes:
   postgres-auth:
   postgres-tracker:

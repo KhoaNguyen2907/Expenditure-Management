@@ -1,7 +1,6 @@
 package com.devper.common.exception;
 
 import com.devper.common.model.response.ResponseWrapper;
-import com.devper.common.utils.JacksonObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

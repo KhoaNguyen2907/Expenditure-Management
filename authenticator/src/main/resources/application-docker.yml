@@ -1,0 +1,35 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: authenticator
+  datasource:
+    url: jdbc:postgresql://${RDS_HOSTNAME:postgres-authenticator}:${RDS_PORT:5432}/${RDS_DB_NAME:authenticator}
+    username: ${RDS_USERNAME:ndkhoalk97}
+    password: ${RDS_PASSWORD:123456}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  zipkin:
+    base-url: http://zipkin:9411
+
+jwt:
+  algorithm:
+    secret: 123456 # Secret key used to sign the JWT token
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    hostname: localhost

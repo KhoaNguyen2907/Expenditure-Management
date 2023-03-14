@@ -4,17 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ReportTransaction {
-    private UUID transactionId;
+    @Field(("transaction_id"))
+    private String transactionId;
     private String category;
-    private LocalDateTime transactionDate;
+    @Field("transaction_date")
+    private String transactionDate;
     private BigDecimal amount;
 }

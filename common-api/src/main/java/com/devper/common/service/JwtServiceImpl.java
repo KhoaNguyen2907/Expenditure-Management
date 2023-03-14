@@ -2,9 +2,12 @@ package com.devper.common.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class JwtServiceImpl implements JwtService{
     @Autowired
     private Algorithm jwtAlgorithm;
@@ -43,4 +47,13 @@ public class JwtServiceImpl implements JwtService{
                 .getClaim("roles").asList(String.class)
                 .stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
     }
+
+    @Override
+    public void setAuthentication(String token) {
+        String username = getUsernameFromToken(token);
+        Set<GrantedAuthority> roles = getRolesFromToken(token);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, token, roles);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
 }

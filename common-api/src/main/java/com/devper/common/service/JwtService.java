@@ -14,4 +14,6 @@ public interface JwtService {
         boolean validateToken(String token);
 
         Set<GrantedAuthority> getRolesFromToken(String token);
+
+        void setAuthentication(String token);
 }

@@ -1,15 +1,22 @@
 server:
   port: 8080
-  address: localhost
 
 spring:
   application:
     name: tracker
+
+  rabbitmq:
+    username: ndkhoalk97
+    password: 123456
+    host: localhost
+    port: 5672
+
   datasource:
     url: jdbc:postgresql://${RDS_HOSTNAME:localhost}:${RDS_PORT:5432}/${RDS_DB_NAME:transaction_tracker}
     username: ${RDS_USERNAME:ndkhoalk97}
     password: ${RDS_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -19,8 +26,17 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
   zipkin:
     base-url: http://localhost:9411
+
+rabbitmq:
+  exchange:
+    internal: internal.exchange
+  routing-key:
+    reporter: internal.reporter.routing.key
+  queue:
+    reporter: internal.reporter.queue
 
 jwt:
   algorithm:
