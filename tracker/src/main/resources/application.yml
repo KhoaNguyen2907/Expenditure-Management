@@ -19,7 +19,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     generate-ddl: true
     properties:
@@ -51,6 +51,11 @@ eureka:
   instance:
     hostname: localhost
 
+grpc:
+  server:
+    report:
+      host: localhost
+      port: 9091
 
 
 

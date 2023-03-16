@@ -1,6 +1,6 @@
 package com.devper.authenticator.service;
 
-import com.devper.authenticator.dao.AuthenticatorDAO;
+import com.devper.authenticator.dao.AppUserDAO;
 import com.devper.authenticator.model.AppUser;
 import com.devper.common.exception.NotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
-    AuthenticatorDAO authDAO;
-    public UserDetailServiceImpl(AuthenticatorDAO authDAO) {
+    AppUserDAO authDAO;
+    public UserDetailServiceImpl(AppUserDAO authDAO) {
         this.authDAO = authDAO;
     }
     @Override

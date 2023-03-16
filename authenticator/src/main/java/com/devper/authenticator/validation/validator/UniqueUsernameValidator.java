@@ -1,6 +1,6 @@
 package com.devper.authenticator.validation.validator;
 
-import com.devper.authenticator.dao.AuthenticatorDAO;
+import com.devper.authenticator.dao.AppUserDAO;
 import com.devper.authenticator.model.AppUser;
 import com.devper.authenticator.validation.annotation.UniqueUsername;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import javax.validation.ConstraintValidatorContext;
 @Slf4j
 public class UniqueUsernameValidator implements ConstraintValidator<UniqueUsername, String> {
     @Autowired
-    AuthenticatorDAO dao;
+    AppUserDAO dao;
     String message;
     public UniqueUsernameValidator() {
     }

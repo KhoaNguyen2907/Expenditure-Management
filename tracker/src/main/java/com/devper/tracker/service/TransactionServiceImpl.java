@@ -47,6 +47,7 @@ public class TransactionServiceImpl implements TransactionService {
         List<TransactionInfo> transactionInfos = transactionList.stream().map(transaction -> mapper.map(transaction, TransactionInfo.class))
                 .collect(Collectors.toList());
         BigDecimal currentBalance = reportService.getCurrentBalance();
+        log.info("currentBalance: {}", currentBalance);
         return TransactionResponse.builder()
                 .transactionList(transactionInfos)
                 .currentBalance(currentBalance)

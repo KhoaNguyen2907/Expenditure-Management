@@ -1,6 +1,8 @@
 package com.devper.reporter.service;
 
+import com.devper.common.exception.JwtVerificationException;
 import com.devper.common.exception.NotFoundException;
+import com.devper.common.service.JwtService;
 import com.devper.common.utils.DateTimeUtil;
 import com.devper.common.utils.ProjectMapper;
 import com.devper.reporter.dao.BalanceReportDAO;
@@ -8,6 +10,7 @@ import com.devper.reporter.dao.ReportDAO;
 import com.devper.reporter.model.*;
 import com.devper.reporter.model.request.TransactionRequest;
 import com.devper.reporter.model.response.DayReportResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,15 +25,18 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@Slf4j
 public class ReportServiceImpl implements ReportService {
     private ReportDAO reportDAO;
     private ProjectMapper mapper;
     private BalanceReportDAO balanceReportDAO;
+    private JwtService jwtService;
 
-    public ReportServiceImpl(ReportDAO reportDAO, ProjectMapper mapper, BalanceReportDAO balanceReportDAO) {
+    public ReportServiceImpl(ReportDAO reportDAO, ProjectMapper mapper, BalanceReportDAO balanceReportDAO, JwtService jwtService) {
         this.reportDAO = reportDAO;
         this.mapper = mapper;
         this.balanceReportDAO = balanceReportDAO;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -49,20 +55,31 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public BigDecimal getCurrentBalance() {
-        //TODO: Need to update this method
-        return BigDecimal.valueOf(1000);
+    public Balance getCurrentBalance() {
+        String token = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
+        return getCurrentBalanceByToken(token);
+    }
+
+    @Override
+    public Balance getCurrentBalanceByToken(String token) {
+        token = token.replace("Bearer ", "");
+        log.info("token: {}", token);
+        if (jwtService.validateToken(token)) {
+            String username = jwtService.getUsernameFromToken(token);
+            return balanceReportDAO.findById(username).orElse(new Balance(username,BigDecimal.ZERO));
+        } else {
+            throw new JwtVerificationException("Invalid token");
+        }
     }
 
     @Override
     public void processNewTransaction(TransactionRequest transaction) {
         String username = getLoggedUsername();
         DayReport report = getDayReportByUsername(LocalDate.parse(transaction.getDate(),DateTimeUtil.getDateTimeFormatter()), username);
+        Balance currentBalance = balanceReportDAO.findById(username).orElse(null);
         if (transaction.getType() == TransactionType.INCOME) {
             report.getStats().setTotalIncomes(report.getStats().getTotalIncomes().add(transaction.getAmount()));
             report.getIncomes().add(mapper.map(transaction, ReportTransaction.class));
-
-            Balance currentBalance = balanceReportDAO.findById(username).orElse(null);
             if (currentBalance == null) {
                 currentBalance = new Balance();
                 currentBalance.setUsername(username);
@@ -70,11 +87,10 @@ public class ReportServiceImpl implements ReportService {
             } else {
                 currentBalance.setBalance(currentBalance.getBalance().add(transaction.getAmount()));
             }
+
         } else {
             report.getStats().setTotalExpenses(report.getStats().getTotalExpenses().add(transaction.getAmount()));
             report.getExpenses().add(mapper.map(transaction, ReportTransaction.class));
-
-            Balance currentBalance = balanceReportDAO.findById(username).orElse(null);
             if (currentBalance == null) {
                 currentBalance = new Balance();
                 currentBalance.setUsername(username);
@@ -86,6 +102,7 @@ public class ReportServiceImpl implements ReportService {
         report.getStats().setTotal(report.getStats().getTotalIncomes().subtract(report.getStats().getTotalExpenses()));
         report.setLastedUpdate(DateTimeUtil.nowDateTime());
 
+        balanceReportDAO.save(currentBalance);
         reportDAO.save(report);
     }
 

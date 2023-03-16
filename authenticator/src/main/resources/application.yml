@@ -11,7 +11,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     generate-ddl: true
     properties:
@@ -33,3 +33,10 @@ eureka:
     register-with-eureka: true
   instance:
     hostname: localhost
+
+grpc:
+  server:
+    report:
+      host: localhost
+      port: 9091
+

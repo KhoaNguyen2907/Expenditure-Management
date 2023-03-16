@@ -91,6 +91,8 @@ services:
       RABBITMQ_DEFAULT_VHOST: /
     networks:
       - em-network
+    volumes:
+    - rabbitmq:/var/lib/rabbitmq
 
   eureka-server:
     image: ndkhoalk97/eureka-server
@@ -186,3 +188,4 @@ volumes:
   postgres-tracker:
   pgadmin:
   mongo-data:
+  rabbitmq:

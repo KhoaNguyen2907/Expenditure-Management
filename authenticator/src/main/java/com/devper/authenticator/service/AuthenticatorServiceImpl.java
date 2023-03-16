@@ -1,6 +1,6 @@
 package com.devper.authenticator.service;
 
-import com.devper.authenticator.dao.AuthenticatorDAO;
+import com.devper.authenticator.dao.AppUserDAO;
 import com.devper.authenticator.model.AppUser;
 import com.devper.authenticator.model.request.LoginRequest;
 import com.devper.authenticator.model.request.SignUpRequest;
@@ -20,13 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class AuthenticatorServiceImpl implements AuthenticatorService{
-    AuthenticatorDAO authDAO;
+    AppUserDAO authDAO;
     AuthenticationManager authenticationManager;
     PasswordEncoder passwordEncoder;
     ProjectMapper mapper;
     JwtService jwtService;
 
-    public AuthenticatorServiceImpl(AuthenticatorDAO authDAO, ProjectMapper mapper, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthenticatorServiceImpl(AppUserDAO authDAO, ProjectMapper mapper, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.authDAO = authDAO;
         this.mapper = mapper;
         this.authenticationManager = authenticationManager;

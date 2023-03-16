@@ -17,6 +17,7 @@ spring:
       port: 27017
       database: reporter
       host: mongodb-reporter
+      auto-index-creation: true
 
   zipkin:
     base-url: http://zipkin:9411
@@ -42,3 +43,6 @@ eureka:
   instance:
     hostname: localhost
 
+grpc:
+  server:
+    port: 9091

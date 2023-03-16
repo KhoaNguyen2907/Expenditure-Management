@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface AuthenticatorDAO extends JpaRepository<AppUser, UUID> {
+public interface AppUserDAO extends JpaRepository<AppUser, UUID> {
 
     Optional<AppUser> findByUsername(String username);
 }

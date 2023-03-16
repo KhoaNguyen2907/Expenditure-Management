@@ -5,11 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +17,7 @@ import java.util.UUID;
 public class MonthReport {
     @Id
     private String id;
+    @Indexed
     private String username;
     private int month;
     private ReportStat stats;
